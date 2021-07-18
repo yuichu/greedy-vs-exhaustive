@@ -216,19 +216,27 @@ void print_ride_vector(const RideVector& rides)
 //
 // Each ride item that is included must have at minimum min_time and at most max_time.
 //	(i.e., each included ride item's time must be between min_time and max_time (inclusive).
-//
+//	 
 // In addition, the the vector includes only the first total_size ride items that match these criteria.
 std::unique_ptr<RideVector> filter_ride_vector
 (
 	const RideVector& source,
-	double min_time,
-	double max_time,
-	int total_size
+	double min_time, 
+	double max_time, 
+	int total_size 
 )
 {
 // TODO: implement this function, then delete the return statement below
-	return nullptr;
-
+std::unique_ptr<RideVector> sortedVector(new RideVector);
+//RideVector sortedVector;
+for(int i = 0; i < source.size(); i++)
+{
+	if((*source[i]).rideTime() > 0 && ((*source[i]).rideTime() >= min_time && (*source[i]).rideTime() <= max_time) && (*sortedVector).size() < total_size)
+	{
+		(*sortedVector).push_back(source[i]);
+	}
+}
+	return sortedVector;
 }
 
 
@@ -244,7 +252,51 @@ std::unique_ptr<RideVector> greedy_max_time
 )
 {
 // TODO: implement this function, then delete the return statement below
-	return nullptr;
+std::unique_ptr<RideVector> todo(new RideVector(rides));
+std::unique_ptr<RideVector> result(new RideVector);
+//RideVector todo = rides;
+//RideVector result;
+double result_cost = 0;
+
+//print_ride_vector(todo);
+while(!(*todo).empty())
+{
+	double maxTPC = 0;
+	int indexMaxTPC = 0;
+	
+	// Find the ride item “a” in todo of maximum time per its cost
+	for (int i = 0; i < (*todo).size(); i++)
+	{
+		if (i == 0)
+		{
+			maxTPC = (*todo->at(i)).rideTime()/(*todo->at(i)).cost();
+		}
+		else
+		{
+			double tpc = (*todo->at(i)).rideTime() / (*todo->at(i)).cost();
+			if (tpc > maxTPC)
+			{
+				maxTPC = tpc;
+				indexMaxTPC = i;
+			}
+		}
+	}
+	// Let c be a’s cost in dollars
+	double c = (*todo->at(indexMaxTPC)).cost();
+	// if (result_cost + c) <= C:
+	// result.add_back(a)
+	// result_cost += c
+	if ((result_cost + c) <= total_cost)
+	{
+		(*result).push_back((*todo).at(indexMaxTPC));
+		result_cost += c;
+	}
+	// Remove “a” from todo
+	(*todo).erase((*todo).begin() + indexMaxTPC);
+	// push todo[index_at_lowest_cost_per_min] to result
+	//std::cout << " while loop " << std::endl;
+}
+	return result;
 }
 
 
@@ -259,6 +311,31 @@ std::unique_ptr<RideVector> exhaustive_max_time
 )
 {
 // TODO: implement this function, then delete the return statement below
+// exhaustive_max_time(C, ride_items):
+// best = None
+// for candidate in subsets(ride_items):
+// if total_cost(candidate) <= G:
+// if best is None or
+//    Total_time(candidate) > total_time(best):
+// best = candidate
+// return best
+
+// exhaustive_max_time(G, ride_items):
+// n = |ride_items|
+// best = None
+// for bits from 0 to (2n -1):
+// candidate = empty vector
+// for j from 0 to n-1:
+// if ((bits >> j) & 1) == 1:
+// candidate.add_back(ride_items[j])
+
+// if total_cost(candidate) <= G:
+// if best is None or
+//    total_time(candidate) > total_time(best):
+// best = candidate
+// return best
+
+
 	return nullptr;
 }
 
