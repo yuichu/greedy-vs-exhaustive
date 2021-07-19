@@ -19,6 +19,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include "timer.hh"
 
 
 // One ride item available for purchase.
@@ -226,9 +227,7 @@ std::unique_ptr<RideVector> filter_ride_vector
 	int total_size 
 )
 {
-// TODO: implement this function, then delete the return statement below
 std::unique_ptr<RideVector> sortedVector(new RideVector);
-//RideVector sortedVector;
 for(int i = 0; i < source.size(); i++)
 {
 	if((*source[i]).rideTime() > 0 && ((*source[i]).rideTime() >= min_time && (*source[i]).rideTime() <= max_time) && (*sortedVector).size() < total_size)
@@ -251,51 +250,42 @@ std::unique_ptr<RideVector> greedy_max_time
 	double total_cost
 )
 {
-// TODO: implement this function, then delete the return statement below
-std::unique_ptr<RideVector> todo(new RideVector(rides));
-std::unique_ptr<RideVector> result(new RideVector);
-//RideVector todo = rides;
-//RideVector result;
-double result_cost = 0;
+	std::unique_ptr<RideVector> todo(new RideVector(rides));
+	std::unique_ptr<RideVector> result(new RideVector);
+	double result_cost = 0;
 
-//print_ride_vector(todo);
-while(!(*todo).empty())
-{
-	double maxTPC = 0;
-	int indexMaxTPC = 0;
-	
-	// Find the ride item “a” in todo of maximum time per its cost
-	for (int i = 0; i < (*todo).size(); i++)
+	while(!(*todo).empty())
 	{
-		if (i == 0)
+		double maxTPC = 0;
+		int indexMaxTPC = 0;
+		
+		// Find the ride item “a” in todo of maximum time per its cost
+		for (int i = 0; i < (*todo).size(); i++)
 		{
-			maxTPC = (*todo->at(i)).rideTime()/(*todo->at(i)).cost();
-		}
-		else
-		{
-			double tpc = (*todo->at(i)).rideTime() / (*todo->at(i)).cost();
-			if (tpc > maxTPC)
+			if (i == 0)
 			{
-				maxTPC = tpc;
-				indexMaxTPC = i;
+				maxTPC = (*todo)[i]->rideTime()/(*todo)[i]->cost();
+			}
+			else
+			{
+				double tpc = (*todo)[i]->rideTime() / (*todo)[i]->cost();
+				if (tpc > maxTPC)
+				{
+					maxTPC = tpc;
+					indexMaxTPC = i;
+				}
 			}
 		}
+		double c = (*todo)[indexMaxTPC]->cost();
+
+		// if the cost of ride isnt over total_cost then add ride into result
+		if ((result_cost + c) <= total_cost)
+		{
+			(*result).push_back((*todo)[indexMaxTPC]);
+			result_cost += c;
+		}
+		(*todo).erase((*todo).begin() + indexMaxTPC);
 	}
-	// Let c be a’s cost in dollars
-	double c = (*todo->at(indexMaxTPC)).cost();
-	// if (result_cost + c) <= C:
-	// result.add_back(a)
-	// result_cost += c
-	if ((result_cost + c) <= total_cost)
-	{
-		(*result).push_back((*todo).at(indexMaxTPC));
-		result_cost += c;
-	}
-	// Remove “a” from todo
-	(*todo).erase((*todo).begin() + indexMaxTPC);
-	// push todo[index_at_lowest_cost_per_min] to result
-	//std::cout << " while loop " << std::endl;
-}
 	return result;
 }
 
@@ -310,40 +300,48 @@ std::unique_ptr<RideVector> exhaustive_max_time
 	double total_cost
 )
 {
-// TODO: implement this function, then delete the return statement below
-// exhaustive_max_time(C, ride_items):
-// best = None
-// for candidate in subsets(ride_items):
-// if total_cost(candidate) <= G:
-// if best is None or
-//    Total_time(candidate) > total_time(best):
-// best = candidate
-// return best
+	std::unique_ptr<RideVector> best1(new RideVector);
+	int n = rides.size();
+	double candidateTotalCost = 0;
+	double candidateTotalTime = 0;
+	double bestTotalCost = 0;
+	double bestTotalTime = 0;
 
-// exhaustive_max_time(G, ride_items):
-// n = |ride_items|
-// best = None
-// for bits from 0 to (2n -1):
-// candidate = empty vector
-// for j from 0 to n-1:
-// if ((bits >> j) & 1) == 1:
-// candidate.add_back(ride_items[j])
+	//ride items vector must be less than 64 to avoid overflow
+	if (rides.size() >= 64)
+	{
+		exit(1);	// if ride size is greater than 64, exit program
+	}
 
-// if total_cost(candidate) <= G:
-// if best is None or
-//    total_time(candidate) > total_time(best):
-// best = candidate
-// return best
+	for (uint64_t bits = 0; bits < pow(2, n); bits++)
+	{
+		std::unique_ptr<RideVector> candidate1(new RideVector);
 
+		for (int j = 0; j < n; j++)
+		{
+			if (((bits >> j) & 1) == 1)
+			{
+				(*candidate1).push_back(rides[j]);
+			}
+		}
+		
+		// calculate total cost and total time of candidate and best
+		sum_ride_vector(*candidate1, candidateTotalCost, candidateTotalTime);
+		sum_ride_vector(*best1, bestTotalCost, bestTotalTime);
 
-	return nullptr;
+		// move candidate to best if within budget and has greater total time than current best
+		if (candidateTotalCost <= total_cost)
+		{
+			if ((*best1).empty() || candidateTotalTime > bestTotalTime)
+			{
+				*best1 = *candidate1;
+			}
+		}
+	}
+// 	// do slow initialization before creating a Timer
+//    Timer timer;
+//    // timer is now running, immediately run the code you want timed
+//    double elapsed = timer.elapsed();
+//    std::cout << "Elapsed time in seconds: " << elapsed << std::endl;
+	return best1;
 }
-
-
-
-
-
-
-
-
-
