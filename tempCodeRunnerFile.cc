@@ -1,1 +1,0 @@
-#include "rubrictest.hh"
