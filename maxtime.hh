@@ -224,11 +224,11 @@ std::unique_ptr<RideVector> filter_ride_vector
 	const RideVector& source,
 	double min_time, 
 	double max_time, 
-	int total_size 
+	size_t total_size 
 )
 {
 std::unique_ptr<RideVector> sortedVector(new RideVector);
-for(int i = 0; i < source.size(); i++)
+for(size_t i = 0; i < source.size(); i++)
 {
 	if((*source[i]).rideTime() > 0 && ((*source[i]).rideTime() >= min_time && (*source[i]).rideTime() <= max_time) && (*sortedVector).size() < total_size)
 	{
@@ -257,10 +257,10 @@ std::unique_ptr<RideVector> greedy_max_time
 	while(!(*todo).empty())
 	{
 		double maxTPC = 0;
-		int indexMaxTPC = 0;
+		size_t indexMaxTPC = 0;
 		
 		// Find the ride item “a” in todo of maximum time per its cost
-		for (int i = 0; i < (*todo).size(); i++)
+		for (size_t i = 0; i < (*todo).size(); i++)
 		{
 			if (i == 0)
 			{
@@ -301,7 +301,7 @@ std::unique_ptr<RideVector> exhaustive_max_time
 )
 {
 	std::unique_ptr<RideVector> best1(new RideVector);
-	int n = rides.size();
+	size_t n = rides.size();
 	double candidateTotalCost = 0;
 	double candidateTotalTime = 0;
 	double bestTotalCost = 0;
@@ -317,7 +317,7 @@ std::unique_ptr<RideVector> exhaustive_max_time
 	{
 		std::unique_ptr<RideVector> candidate1(new RideVector);
 
-		for (int j = 0; j < n; j++)
+		for (uint64_t j = 0; j < n; j++)
 		{
 			if (((bits >> j) & 1) == 1)
 			{
@@ -338,10 +338,5 @@ std::unique_ptr<RideVector> exhaustive_max_time
 			}
 		}
 	}
-// 	// do slow initialization before creating a Timer
-//    Timer timer;
-//    // timer is now running, immediately run the code you want timed
-//    double elapsed = timer.elapsed();
-//    std::cout << "Elapsed time in seconds: " << elapsed << std::endl;
 	return best1;
 }
