@@ -1,5 +1,4 @@
-# Project-2
-County Fair
+# Algorithm Engineering - Project 2
 
 Group members:
 
@@ -9,6 +8,7 @@ Jason Liu jliu96@csu.fullerton.edu
 
 Project Overview:
 
-Given a set of .csv data of rides/cost/time find the rides that within 
-a set budget that would maximizes the amount of time on rides.
-With the use of 2 algorithms greedy pattern and proper exhaustive search.
+Given a .csv data set of carnival rides and their respective cost and ride time, 
+find the combination of rides that maximizes the amount of time on rides
+while remaining within a predetermined budget.
+Utilizes the greedy pattern and proper exhaustive search algorithms separately.
